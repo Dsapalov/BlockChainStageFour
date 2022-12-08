@@ -29,4 +29,4 @@
 
 2) Added KeyPair & Signature implementation
 3) Added Account class implementation
-4) In progress
+4) In progress (urgent electricity problem - will be implemented in nearest 3 days 08.12.22)
