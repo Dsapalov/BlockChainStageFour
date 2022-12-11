@@ -6,59 +6,61 @@
 //
 
 import Foundation
+import CommonCrypto
 
 protocol TransactionProtocol {
-    var transactionID: String { get set }
-    var setOfOperations: [Operation] { get set }
-    var nonce: Int { get set }
-    
-    static func createTransacition(setOfOperations: [Operation], nonce: Int) -> Transaction
-    func toString() -> String
-    func print()
+
 }
 
 final class Transaction {
+    var transactionID: String!
+    var setOfOperations: [Operation]!
+    var nonce: Int!
     
+    init(setOfOperations: [Operation], nonce: Int){
+        self.setOfOperations = setOfOperations
+        self.nonce = nonce
+        
+        let encodedData = NSKeyedArchiver.archivedData(withRootObject: setOfOperations)
+
+        self.transactionID = encodedData.sha256()
+    }
 }
 
 extension Transaction: TransactionProtocol {
-    var transactionID: String {
-        get {
-            return transactionID
-        }
-        set {
-            
-        }
+    
+}
+
+extension Data{
+    public func sha256() -> String{
+        return hexStringFromData(input: digest(input: self as NSData))
     }
     
-    var setOfOperations: [Operation] {
-        get {
-            return setOfOperations
-        }
-        set {
-            
-        }
+    private func digest(input : NSData) -> NSData {
+        let digestLength = Int(CC_SHA256_DIGEST_LENGTH)
+        var hash = [UInt8](repeating: 0, count: digestLength)
+        CC_SHA256(input.bytes, UInt32(input.length), &hash)
+        return NSData(bytes: hash, length: digestLength)
     }
     
-    var nonce: Int {
-        get {
-            return nonce	
-        }
-        set {
-            
-        }
-    }
-    
-    static func createTransacition(setOfOperations: [Operation], nonce: Int) -> Transaction {
-        return Transaction()
-    }
-    
-    func toString() -> String {
-        return "----"
-    }
-    
-    func print() {
+    private  func hexStringFromData(input: NSData) -> String {
+        var bytes = [UInt8](repeating: 0, count: input.length)
+        input.getBytes(&bytes, length: input.length)
         
+        var hexString = ""
+        for byte in bytes {
+            hexString += String(format:"%02x", UInt8(byte))
+        }
+        
+        return hexString
     }
-    
+}
+
+public extension String {
+    func sha256() -> String{
+        if let stringData = self.data(using: String.Encoding.utf8) {
+            return stringData.sha256()
+        }
+        return ""
+    }
 }

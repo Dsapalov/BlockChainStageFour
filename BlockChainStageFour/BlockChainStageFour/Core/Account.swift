@@ -15,7 +15,7 @@ protocol AccountProtocol {
     func getBalance() -> Int
     func printBalance()
     func signData(message: String, index: Int) -> Data?
-    func createOperation(recipient: Account, amount: Int, index: IndexPath) -> Operation
+    func createOperation(recipient: Account, amount: Int, index: Int) -> Operation?
 }
 
 final class Account: Hashable {
@@ -78,9 +78,10 @@ extension Account: AccountProtocol {
         return signature.signData(publicKey: actualPublicKey, message: message)
     }
     
-    func createOperation(recipient: Account, amount: Int, index: IndexPath) -> Operation {
-        // TODO: will be implemented on stage #4
-        Operation()
+    func createOperation(recipient: Account, amount: Int, index: Int) -> Operation? {
+        let publicKey = recipient.wallet[index].publicKey
+        guard let signature = publicKey as? Data else { return nil }
+        return Operation(sender: nil, receiver: recipient, amount: amount, signature: signature)
     }
     
 }

@@ -8,74 +8,29 @@
 import Foundation
 
 protocol OperationProtocol {
-    var sender: Account { get set}
-    var receiver: Account { get set}
-    var amount: Int { get set}
-    var signature: Data { get set}
-    
-    static func createOperation(sender: Account, receiver: Account, amount: Int, signature: Data) -> Operation
-    static func verifyOperation(operation: Operation) -> Bool
-    
-    func toString() -> String
-    func print()
+    func verifyOperation(operation: Operation) -> Bool
 }
 
 final class Operation {
-    
+    // TODO: re-check - inconsistance wit spec - in Account::createPaymentOp absent sender param for Operation constructor
+    var amount: Int
+    var signature: Data!
+    var sender: Account?
+    var receiver: Account!
+
+    init(sender: Account?, receiver: Account, amount: Int, signature: Data){
+        self.sender = sender
+        self.receiver = receiver
+        self.amount = amount
+        self.signature = signature
+    }
 }
 
 extension Operation: OperationProtocol {
-    var sender: Account {
-        get {
-            return sender
-        }
-        set {
-            
-        }
-    }
+   
     
-    var receiver: Account {
-        get {
-            return receiver
-        }
-        set {
-            
-        }
+    func verifyOperation(operation: Operation) -> Bool {
+        return !(operation.amount > self.amount)
     }
-    
-    var amount: Int {
-        get {
-            return amount
-        }
-        set {
-            
-        }
-    }
-    
-    var signature: Data {
-        get {
-            return signature
-        }
-        set {
-            
-        }
-    }
-    
-    static func createOperation(sender: Account, receiver: Account, amount: Int, signature: Data) -> Operation {
-        return Operation()
-    }
-    
-    static func verifyOperation(operation: Operation) -> Bool {
-        return false
-    }
-    
-    func toString() -> String {
-        return "----"
-    }
-    
-    func print() {
-        
-    }
-    
     
 }
